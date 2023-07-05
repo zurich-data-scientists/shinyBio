@@ -14,3 +14,13 @@ The included shiny app demonstrates the underlying principles of (generalized) l
 * It provides diagnostic plots to assess the model's assumptions.
 
  Furthermore, the package offers insights into how the fitted data and diagnostic plots appear when the model's assumptions are not satisfied. This feature allows users to gain an understanding of the potential consequences and implications of violating these assumptions
+
+To install this package on your computer, you have to install the {devtools} package, load it and then you can isntall the package from the github repository.
+
+Follow these steps:
+
+install.packages(devtools)
+library(devtools)
+install_github("zurich-data-scientists/shinyBio")
+shinyBio::run_app()
+
