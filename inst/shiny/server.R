@@ -24,15 +24,15 @@ server <- function(input, output, session){
   output$story2 <- renderText({
     HTML("<br><p> To achieve this goal, they conducted a study to determine the effects of 
     different variables on the weight of corn cobs. </p>
-      <p> They monitored the growth of 306 plant of corn and recorded the weights of their cobs as they matured,
-    while varying the different variables. </p> 
+      <p> They monitored the growth of corn 306 plants and recorded the weights of their cobs as they matured,
+    while varying different variables. </p> 
       Ultimately, they discovered that the most influential factors were
     the amount of fertilizer used, the location of the cornfield, 
     the height of the plant, 
     and periods of drought. </p>
       <p> After completing this study, a second one was conducted, 
          this time focusing on the observation of the number of corn cobs 
-         rather than their weight. The study was based on 306 corn plants. </p>")
+         rather than their weight. The study was again based on 306 corn plants. </p>")
     
     
     
@@ -326,7 +326,8 @@ server <- function(input, output, session){
          &beta;<sub>Fertilizer</sub> * x<sub>Fertilizer<sub>i</sub></sub>
          + &beta;<sub>LOC</sub> * I<sub>LOC<sub>i</sub></sub> + 
          &beta;<sub>ZH</sub> * I<sub>ZH<sub>i</sub></sub>  + 
-         &epsilon;<sub>i</sub>, i = 1,..., ", dim.dataset))
+         &epsilon;<sub>i</sub>, &ensp; i = 1,..., ", dim.dataset), 
+         ",&ensp; <em>e</em> ~ N(&mu; , &sigma;<sub>&epsilon; </sub><sup>2</sup>)")
   })
   
   ## Plots -----------------------------------------------------------------------
@@ -338,13 +339,14 @@ server <- function(input, output, session){
     gg.fertilizer <- ggplot(dataset1(), mapping = aes(x = Fertilizer, 
                                                       y = Cob_weight)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       ggtitle("Cob_weight against Fertilizer")
     
     gg.site <- ggplot(dataset1(), mapping = aes(x = Site, 
                                                 y = Cob_weight, 
                                                 colour = Site)) +
-      geom_violin(draw_quantiles = 0.5) +
+      geom_boxplot() +
+      geom_point(alpha = 0.2) +
       ggtitle("Cob_weight against Site")
     
     ggarrange(gg.fertilizer, gg.site)
@@ -366,7 +368,7 @@ server <- function(input, output, session){
                                      y = Cob_weight,
                                      colour = Site)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       ggtitle("Cob_weight against Fertilizer, highlighting Site")
     
   })
@@ -395,7 +397,7 @@ server <- function(input, output, session){
   output$plot.title1 <- renderText({
     #req(n.simulate())
     
-    HTML(paste0("<h4>","Fitted values and linear model","</h4>"))
+    HTML(paste0("<h4>","Fitted values of the linear model","</h4>"))
   })
   
   ## Plot the dataset and the linear model
@@ -456,38 +458,66 @@ server <- function(input, output, session){
       mutate(res = residuals(InputModel.lm1()))
   })
   
+  
   output$plot.diagnostic.lm1 <- renderPlot({
-    par(mfrow = c(4, 1), mar = c(0.2, 1, 2, 1))
+    par(mfrow = c(2, 2)#, 
+        #mar = c(1, 2, 2, 2)
+    )
     plot(InputModel.lm1(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
   
-  ## plot the residuals
-  output$plot.residuals1 <- renderPlot({
-    
-    InputModel.fit1() %>% 
-      ggplot(mapping = aes(x = fit, y = res)) +
-      geom_point(alpha = 0.3) +
-      geom_smooth() +
-      labs(x = "Fitted values", y = "Residuals") +
-      geom_hline(yintercept = 0, colour = "violet")
-    
+  
+  
+  
+  observeEvent(input$openPlotButton_panel1, {
+    output$modalUI_panel1 <- renderUI({
+      modalDialog(
+        id = "plotModal_panel1",
+        title = "Zoomed Plot",
+        plotOutput("plot.diagnostic.lm1_zoomed"),
+        easyClose = TRUE,
+      )
+      
+    })
+  })
+  
+  output$plot.diagnostic.lm1_zoomed <- renderPlot({
+    par(mfrow = c(2, 2) #, mar = c(0.2, 1, 2, 1)
+    )
+    plot(InputModel.lm1.5(), which = c(1, 2, 3, 5))
+    par(mfrow = c(1, 1))
   })
   
   
+  # ## plot the residuals
+  # output$plot.residuals1 <- renderPlot({
+  #   
+  #   InputModel.fit1() %>% 
+  #     ggplot(mapping = aes(x = fit, y = res)) +
+  #     geom_point(alpha = 0.3) +
+  #     geom_smooth() +
+  #     labs(x = "Fitted values", y = "Residuals") +
+  #     geom_hline(yintercept = 0, colour = "violet")
+  #   
+  # })
   
   
-  output$qqplot.lm1 <- renderPlot({
-    
-    InputModel.fit1() %>%
-      ggplot(aes(sample = res)) +
-      geom_qq(na.rm = TRUE) +
-      geom_qq_line(color = "red", na.rm = TRUE) +
-      theme_bw() +
-      labs(y = "Residuals quantiles", x = "Theoretical quantiles")
-    
-    
-  })
+  
+  
+  # output$qqplot.lm1 <- renderPlot({
+  # 
+  #   InputModel.fit1() %>%
+  #     ggplot(aes(sample = res)) +
+  #     geom_qq(na.rm = TRUE) +
+  #     geom_qq_line(color = "red", na.rm = TRUE) +
+  #     theme_bw() +
+  #     labs(y = "Residuals quantiles", x = "Theoretical quantiles")
+  # })
+  
+  
+  
+  
   ########################### 1.5 Panel- Linear model 2 continuous, 1 factors ##############################
   
   ########################### Simulate dataset ##############################
@@ -557,7 +587,8 @@ server <- function(input, output, session){
     &beta;<sub>LOC<sub>i</sub></sub> * I<sub>LOC<sub>i</sub></sub> + 
          &beta;<sub>ZH</sub> * I<sub>ZH<sub>i</sub></sub> +  
          &beta;<sub>Plant_height</sub> * log(x<sub>Plant_height<sub>i</sub></sub>) +
-                &epsilon;<sub>i</sub>, i = 1,..., ", dim.dataset))
+                &epsilon;<sub>i</sub>, &ensp; i = 1,..., ", dim.dataset), 
+         ",&ensp; <em>e</em> ~ N(&mu; , &sigma;<sub>&epsilon; </sub><sup>2</sup>)")
   })
   
   
@@ -573,7 +604,7 @@ server <- function(input, output, session){
                             mapping = aes(x = Fertilizer, 
                                           y = Cob_weight)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       
       ggtitle("Cob_weight against Fertilizer")
     
@@ -581,7 +612,7 @@ server <- function(input, output, session){
                         mapping = aes(x = Plant_height, 
                                       y = Cob_weight)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       
       ggtitle("Cob_weight against Plant_height")
     
@@ -589,9 +620,8 @@ server <- function(input, output, session){
                       mapping = aes(x = Site, 
                                     y = Cob_weight,
                                     colour = Site)) +
-      geom_violin(draw_quantiles = 0.5) +
-      geom_smooth(se = FALSE) +
-      
+      geom_boxplot() +
+      geom_point(alpha = 0.2) +
       ggtitle("Cob_weight against Site")
     
     
@@ -600,7 +630,7 @@ server <- function(input, output, session){
                                           y = Cob_weight)) +
       geom_point(alpha = 0.3) +
       scale_x_log10() +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       
       ggtitle("Cob_weight against Plant_height in log scale")
     
@@ -612,8 +642,13 @@ server <- function(input, output, session){
   
   output$explanation.log <- renderText({
     
-    HTML("<p> It is possible to notice that the variable Plant_height is right skewed. 
-         For this reason we have done a second plot by log transforming this variable.")
+    HTML('<p>The variable <em>Plant_height</em> is right skewed (see plot just above on the left). 
+         Indeed, there are very many observations on the left-hand side of the plot and become 
+         less dense as you go to the right. This behaviour is absolutely expected for continuous 
+         variables that can only take positive values, the so called "amounts". 
+         In order to improve the situation, amounts are log-transformed 
+         (see the plot just above on the right hand side). 
+         For this reason we have done a second plot by log transforming this variable </p>')
   })
   
   
@@ -623,7 +658,7 @@ server <- function(input, output, session){
          we highlighted the sites by colouring each of them with a different colour.
          <br>
          Unfortunately, putting all three explanatory variables in a single graph 
-         would result in a plot that is too complicated to be understood.")
+         would result in a plot that is too complicated to be understood.</p>")
     
   })
   
@@ -635,7 +670,7 @@ server <- function(input, output, session){
                                           y = Cob_weight, 
                                           colour = Site)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       
       ggtitle("Cob_weight against Fertilizer, highlighting Site")
     
@@ -645,7 +680,7 @@ server <- function(input, output, session){
                                       colour = Site)) +
       geom_point(alpha = 0.3) +
       scale_x_log10() +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       
       ggtitle("Cob_weight against Plant_height in log scale, highlighting Site")
     
@@ -680,7 +715,7 @@ server <- function(input, output, session){
   output$plot.title1.5 <- renderText({
     #req(n.simulate())
     
-    HTML(paste0("<h4>","Fitted values","</h4>"))
+    HTML(paste0("<h4>","Fitted values of the linear model","</h4>"))
   })
   
   ## Plot the dataset and the linear model
@@ -697,31 +732,31 @@ server <- function(input, output, session){
     gg.fertilizer <- ggplot(dataset.predict,
                             mapping = aes(x = Fertilizer, 
                                           y = fitted.lm)) +
-      geom_point(alpha = 0.3, mapping = aes(colour = Site)) +
-      
-      ## Linear model for Site Lausanne
-      geom_abline(intercept = coef.lm["(Intercept)"] +
-                    coef.lm["log(Plant_height)"] * log.mean.height,
-                  slope = coef.lm["Fertilizer"],
-                  alpha = 0.5,
-                  color = "red") +
-      
-      ## Linear model for Site Locarno
-      geom_abline(intercept = coef.lm["(Intercept)"] + 
-                    coef.lm["SiteLocarno"] +
-                    coef.lm["log(Plant_height)"] * log.mean.height,
-                  slope = coef.lm["Fertilizer"],
-                  alpha = 0.5,
-                  color = "green4") +
-      
-      ## Linear model for Site Zurich
-      geom_abline(intercept = coef.lm["(Intercept)"] + 
-                    coef.lm["SiteZurich"] + 
-                    coef.lm["log(Plant_height)"] * log.mean.height,
-                  slope = coef.lm["Fertilizer"],
-                  alpha = 0.5,
-                  color = "blue") +
-      ggtitle("Fitted values") 
+      geom_point(alpha = 0.3, mapping = aes(colour = Site))# +
+    
+    ## Linear model for Site Lausanne
+    # geom_abline(intercept = coef.lm["(Intercept)"] +
+    #               coef.lm["log(Plant_height)"] * log.mean.height,
+    #             slope = coef.lm["Fertilizer"],
+    #             alpha = 0.5,
+    #             color = "red") +
+    # 
+    # ## Linear model for Site Locarno
+    # geom_abline(intercept = coef.lm["(Intercept)"] + 
+    #               coef.lm["SiteLocarno"] +
+    #               coef.lm["log(Plant_height)"] * log.mean.height,
+    #             slope = coef.lm["Fertilizer"],
+    #             alpha = 0.5,
+    #             color = "green4") +
+    # 
+    # ## Linear model for Site Zurich
+    # geom_abline(intercept = coef.lm["(Intercept)"] + 
+    #               coef.lm["SiteZurich"] + 
+    #               coef.lm["log(Plant_height)"] * log.mean.height,
+    #             slope = coef.lm["Fertilizer"],
+    #             alpha = 0.5,
+    #             color = "blue") +
+    # ggtitle("Fitted values of the model") 
     
     
     
@@ -742,33 +777,33 @@ server <- function(input, output, session){
                         mapping = aes(x = Plant_height, 
                                       y = fitted.lm)) +
       geom_point(alpha = 0.3, mapping = aes(colour = Site)) +
-      scale_x_log10() +
-      
-      ## Linear model for Site Lausanne
-      geom_abline(intercept = coef.lm["(Intercept)"] + 
-                    coef.lm["Fertilizer"] * mean.fertilizer,
-                  slope = exp(coef.lm["log(Plant_height)"]),
-                  alpha = 0.5,
-                  color = "red") +
-      
-      
-      ## Linear model for Site Locarno
-      geom_abline(intercept = coef.lm["(Intercept)"] + 
-                    coef.lm["SiteLocarno"] + 
-                    coef.lm["Fertilizer"] * mean.fertilizer,
-                  slope = exp(coef.lm["log(Plant_height)"]),
-                  alpha = 0.5,
-                  color = "green4") +
-      
-      ## Linear model for Site Zurich
-      geom_abline(intercept = coef.lm["(Intercept)"] + 
-                    coef.lm["SiteZurich"] + 
-                    coef.lm["Fertilizer"] * mean.fertilizer,
-                  slope = exp(coef.lm["log(Plant_height)"]),
-                  alpha = 0.5,
-                  color = "blue") +
-      ggtitle("Fitted values") 
-    
+      scale_x_log10() #+
+    # 
+    # ## Linear model for Site Lausanne
+    # geom_abline(intercept = coef.lm["(Intercept)"] + 
+    #               coef.lm["Fertilizer"] * mean.fertilizer,
+    #             slope = exp(coef.lm["log(Plant_height)"]),
+    #             alpha = 0.5,
+    #             color = "red") +
+    # 
+    # 
+    # ## Linear model for Site Locarno
+    # geom_abline(intercept = coef.lm["(Intercept)"] + 
+    #               coef.lm["SiteLocarno"] + 
+    #               coef.lm["Fertilizer"] * mean.fertilizer,
+    #             slope = exp(coef.lm["log(Plant_height)"]),
+    #             alpha = 0.5,
+    #             color = "green4") +
+    # 
+    # ## Linear model for Site Zurich
+    # geom_abline(intercept = coef.lm["(Intercept)"] + 
+    #               coef.lm["SiteZurich"] + 
+    #               coef.lm["Fertilizer"] * mean.fertilizer,
+    #             slope = exp(coef.lm["log(Plant_height)"]),
+    #             alpha = 0.5,
+    #             color = "blue") +
+    # ggtitle("Fitted values of the linear model") 
+    # 
     
     
     gg.height.values <- if ( input$observed.values.lm1.5 ) {
@@ -798,37 +833,59 @@ server <- function(input, output, session){
   })
   
   output$plot.diagnostic.lm1.5 <- renderPlot({
-    par(mfrow = c(4, 1), mar = c(0.2, 1, 2, 1))
+    par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
+    )
+    plot(InputModel.lm1.5(), which = c(1, 2, 3, 5))
+    par(mfrow = c(1, 1))
+  })
+  # 
+  # ## plot the residuals
+  # output$plot.residuals1.5 <- renderPlot({
+  #   
+  #   InputModel.fit1.5() %>% 
+  #     ggplot(mapping = aes(x = fit, y = res)) +
+  #     geom_hline(yintercept = 0, colour = "violet") +
+  #     geom_point(alpha = 0.3) +
+  #     geom_smooth() +
+  #     labs(x = "Fitted values", y = "Residuals") 
+  #   
+  # })
+  # 
+  # 
+  # 
+  # 
+  # output$qqplot.lm1.5 <- renderPlot({
+  #   
+  #   InputModel.fit1.5() %>%
+  #     ggplot(aes(sample = res)) +
+  #     geom_qq(na.rm = TRUE) +
+  #     geom_qq_line(color = "red", na.rm = TRUE) +
+  #     theme_bw() +
+  #     labs(y = "Residuals quantiles", x = "Theoretical quantiles")
+  #   
+  #   
+  # })
+  
+  
+  observeEvent(input$openPlotButton_panel1.5, {
+    output$modalUI_panel1.5 <- renderUI({
+      modalDialog(
+        id = "plotModal_panel1.5",
+        title = "Zoomed Plot",
+        plotOutput("plot.diagnostic.lm1.5_zoomed"),
+        easyClose = TRUE,
+      )
+      
+    })
+  })
+  
+  output$plot.diagnostic.lm1.5_zoomed <- renderPlot({
+    par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
+    )
     plot(InputModel.lm1.5(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
   
-  ## plot the residuals
-  output$plot.residuals1.5 <- renderPlot({
-    
-    InputModel.fit1.5() %>% 
-      ggplot(mapping = aes(x = fit, y = res)) +
-      geom_point(alpha = 0.3) +
-      geom_smooth() +
-      labs(x = "Fitted values", y = "Residuals") +
-      geom_hline(yintercept = 0, colour = "violet")
-    
-  })
-  
-  
-  
-  
-  output$qqplot.lm1.5 <- renderPlot({
-    
-    InputModel.fit1.5() %>%
-      ggplot(aes(sample = res)) +
-      geom_qq(na.rm = TRUE) +
-      geom_qq_line(color = "red", na.rm = TRUE) +
-      theme_bw() +
-      labs(y = "Residuals quantiles", x = "Theoretical quantiles")
-    
-    
-  })
   
   
   
@@ -907,7 +964,8 @@ server <- function(input, output, session){
          &beta;<sub>ZH</sub> * I<sub>ZH<sub>i</sub></sub> + 
          &beta;<sub>Plant_height</sub> * log(x<sub>Plant_height<sub>i</sub></sub>) +
          &beta;<sub>Variety<sub>2</sub></sub> * I<sub>Variety<sub>2<sub>i</sub></sub></sub> + 
-         &epsilon;<sub>i</sub>, i = 1,..., ", dim.dataset))
+         &epsilon;<sub>i</sub>, &ensp; i = 1,..., ", dim.dataset), 
+         ",&ensp; <em>e</em> ~ N(&mu; , &sigma;<sub>&epsilon; </sub><sup>2</sup>)")
   })
   
   
@@ -921,7 +979,7 @@ server <- function(input, output, session){
     dataset2() %>% 
       mutate(Variety.fac = factor(Variety.chr,
                                   levels = c("1", "0"),
-                                  labels = c("Standard", "Sugar_Extended")))
+                                  labels = c("Grain", "Silage")))
   })
   
   
@@ -933,7 +991,7 @@ server <- function(input, output, session){
                             mapping = aes(x = Fertilizer, 
                                           y = Cob_weight)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       #facet_grid(~ Variety) +
       ggtitle("Cob_weight against Fertilizer")
     
@@ -941,7 +999,7 @@ server <- function(input, output, session){
                         mapping = aes(x = Plant_height, 
                                       y = Cob_weight)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       ggtitle("Cob_weight against Plant_height")
     
     
@@ -951,7 +1009,8 @@ server <- function(input, output, session){
                                        y = Cob_weight, 
                                        group = Variety.fac,
                                        colour = Variety.fac )) +
-      geom_violin(draw_quantiles = 0.5) +
+      geom_boxplot() +
+      geom_point(alpha = 0.1) +
       ggtitle("Cob_weight against Variety")
     
     
@@ -960,7 +1019,8 @@ server <- function(input, output, session){
                                     y = Cob_weight, 
                                     group = Site,
                                     colour = Site)) +
-      geom_violin(draw_quantiles = 0.5) +
+      geom_boxplot() +
+      geom_point(alpha = 0.1) +
       ggtitle("Cob_weight against Site")
     
     
@@ -968,7 +1028,7 @@ server <- function(input, output, session){
                             mapping = aes(x = Plant_height, 
                                           y = Cob_weight)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       #facet_grid(~ Variety) +
       scale_x_log10() +
       ggtitle("Cob_weight against the log of Plant_height")
@@ -999,7 +1059,7 @@ server <- function(input, output, session){
                                                y = Cob_weight, 
                                                colour = Site)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       ggtitle("Cob_weight against Fertilizer")
     
     gg.height.site <- ggplot(dataset2.fac(), 
@@ -1007,7 +1067,7 @@ server <- function(input, output, session){
                                            y = Cob_weight, 
                                            colour = Site)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       scale_x_log10() +
       ggtitle("Cob_weight against log of Plant_height")
     
@@ -1017,7 +1077,7 @@ server <- function(input, output, session){
                                                   y = Cob_weight, 
                                                   colour = Variety.fac)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       ggtitle("Cob_weight against Fertilizer")
     
     
@@ -1026,7 +1086,7 @@ server <- function(input, output, session){
                                               y = Cob_weight, 
                                               colour = Variety.fac)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       scale_x_log10() +
       ggtitle("Cob_weight against log of Plant_height")
     
@@ -1063,7 +1123,7 @@ server <- function(input, output, session){
   output$plot.title2 <- renderText({
     #req(n.simulate())
     
-    HTML(paste0("<h4>","Fitted values","</h4>"))
+    HTML(paste0("<h4>","Fitted values of the linear model","</h4>"))
   })
   
   # ## Plot the dataset and the linear model
@@ -1195,7 +1255,7 @@ server <- function(input, output, session){
   #       
   #       ## Linear model for second variety
   #       geom_abline(intercept = coef.lm["(Intercept)"] + 
-  #                     coef.lm["Variety.facSugar_Extended"] + 
+  #                     coef.lm["Variety.facSilage"] + 
   #                     coef.lm["Fertilizer"] * mean.fertilizer,
   #                   slope = exp(coef.lm["log(Plant_height)"]),
   #                   alpha = 0.5,
@@ -1232,7 +1292,7 @@ server <- function(input, output, session){
   #       
   #       ## Linear model for second variety
   #       geom_abline(intercept = coef.lm["(Intercept)"] + 
-  #                     coef.lm["Variety.facSugar_Extended"] +
+  #                     coef.lm["Variety.facSilage"] +
   #                     coef.lm["log(Plant_height)"] * log.mean.height,
   #                   slope = coef.lm["Fertilizer"],
   #                   alpha = 0.5,
@@ -1281,17 +1341,17 @@ server <- function(input, output, session){
     gg.height <- ggplot(dataset.predict,
                         mapping = aes(x = Plant_height,
                                       y = fitted.lm)) +
-      geom_point(alpha = 0.3) +
+      geom_point(alpha = 0.3, colour = "violet") +
       scale_x_log10() +
-      ggtitle("Fitted values for standard variety of cob against log of Plant_height in Lausanne") +
-      
-      
-      ## Linear model for Site Lausanne and standard variety of cob
-      geom_abline(intercept = coef.lm["(Intercept)"] + 
-                    coef.lm["Fertilizer"] * mean.fertilizer,
-                  slope = exp(coef.lm["log(Plant_height)"]),
-                  alpha = 0.5,
-                  color = "red")
+      ggtitle("Fitted values for Grain variety of cob against log of Plant_height in Lausanne") #+
+    
+    
+    ## Linear model for Site Lausanne and Grain variety of cob
+    # geom_abline(intercept = coef.lm["(Intercept)"] + 
+    #               coef.lm["Fertilizer"] * mean.fertilizer,
+    #             slope = exp(coef.lm["log(Plant_height)"]),
+    #             alpha = 0.5,
+    #             color = "red") 
     
     
     
@@ -1299,7 +1359,6 @@ server <- function(input, output, session){
     gg.height.values <- if ( input$observed.values.lm2 ) {
       gg.height + 
         geom_point(alpha = 0.3, mapping = aes(y = Cob_weight), 
-                   alpha = 0.5, 
                    colour = "darkgrey") 
     } else {
       
@@ -1313,17 +1372,17 @@ server <- function(input, output, session){
     gg.fertilizer <- ggplot(dataset.predict,
                             mapping = aes(x = Fertilizer,
                                           y = fitted.lm)) +
-      geom_point(alpha = 0.3) +
-      ggtitle("Fitted values for standard variety of cob against Fertilizer in Lausanne") +
-      
-      
-      ## Linear model for Site Lausanne and standard variety of cob
-      geom_abline(intercept = coef.lm["(Intercept)"] +
-                    coef.lm["log(Plant_height)"] * log.mean.height,
-                  slope = coef.lm["Fertilizer"],
-                  alpha = 0.5,
-                  color = "red") 
+      geom_point(alpha = 0.3, colour = "violet") +
+      ggtitle("Fitted values for Grain variety of cob against Fertilizer in Lausanne")# +
     
+    
+    ## Linear model for Site Lausanne and Grain variety of cob
+    # geom_abline(intercept = coef.lm["(Intercept)"] +
+    #               coef.lm["log(Plant_height)"] * log.mean.height,
+    #             slope = coef.lm["Fertilizer"],
+    #             alpha = 0.5,
+    #             color = "red") 
+    # 
     
     ## Add (or not) observed values
     gg.fertilizer.values <- if ( input$observed.values.lm2 ) {
@@ -1354,10 +1413,15 @@ server <- function(input, output, session){
     gg.site <- ggplot(dataset.predict,
                       mapping = aes(x = Site,
                                     y = fitted.lm)) +
-      geom_violin(draw_quantiles = 0.5) + 
-      ggtitle("Fitted values against Site for standard variety of cob") +
-      
-      geom_point(mean.values.site, mapping = aes(x = Site, y = fitted.lm, colour = "red"))
+      geom_boxplot() +
+      geom_point(alpha = 0.1, colour = "violet") +
+      ggtitle("Fitted values against Site for Grain variety of cob")# +
+    
+    # geom_point(mean.values.site, mapping = aes(x = Site, y = fitted.lm, 
+    #                                            colour = "red")) +
+    # scale_colour_discrete(name = "Prediction", 
+    #                        breaks = c("red"), 
+    #                        labels = c("fitted value"))
     
     
     
@@ -1377,24 +1441,30 @@ server <- function(input, output, session){
     
     
     ## Create dataframe for fitted values, when controlling for plant_height, fertilizer and Site
-    mean.values.variety <- data.frame(Variety.fac = c("Standard", "Sugar_Extended"), 
+    mean.values.variety <- data.frame(Variety.fac = c("Grain", "Silage"), 
                                       fitted.lm = c(coef.lm["log(Plant_height)"] * log.mean.height +
                                                       coef.lm["Fertilizer"] * mean.fertilizer, 
                                                     coef.lm["(Intercept)"] +
                                                       coef.lm["log(Plant_height)"] * log.mean.height +
                                                       coef.lm["Fertilizer"] * mean.fertilizer + 
-                                                      coef.lm["Variety.facSugar_Extended"]))
+                                                      coef.lm["Variety.facSilage"]))
     
     
     ## Variety
     gg.variety <- ggplot(dataset.predict,
                          mapping = aes(x = Variety.fac,
                                        y = fitted.lm)) +
-      geom_violin(draw_quantiles = 0.5) + 
-      ggtitle("Fitted values against Variety.fac in Lausanne") +
-      
-      
-      geom_point(mean.values.variety, mapping = aes(x = Variety.fac, y = fitted.lm, colour = "red"))
+      geom_boxplot() +
+      geom_point(alpha = 0.1, colour = "violet") +
+      ggtitle("Fitted values against Variety.fac in Lausanne")# +
+    
+    
+    # geom_point(mean.values.variety, mapping = aes(x = Variety.fac, 
+    #                                               y = fitted.lm, 
+    #                                               colour = "red")) +
+    # scale_colour_discrete(name = "Prediction", 
+    #                        breaks = c("red"), 
+    #                        labels = c("fitted value"))
     
     
     ## Add (or not) observed values
@@ -1426,37 +1496,63 @@ server <- function(input, output, session){
   })
   
   output$plot.diagnostic.lm2 <- renderPlot({
-    par(mfrow = c(4, 1), mar = c(0.2, 1, 2, 1))
+    par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
+    )
     plot(InputModel.lm2(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
   
+  
+  
+  
+  observeEvent(input$openPlotButton_panel2, {
+    output$modalUI_panel2 <- renderUI({
+      modalDialog(
+        id = "plotModal_panel2",
+        title = "Zoomed Plot",
+        plotOutput("plot.diagnostic.lm2_zoomed"),
+        easyClose = TRUE,
+      )
+      
+    })
+  })
+  
+  output$plot.diagnostic.lm2_zoomed <- renderPlot({
+    par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
+    )
+    plot(InputModel.lm2(), which = c(1, 2, 3, 5))
+    par(mfrow = c(1, 1))
+  })
+  
+  
+  
+  
   ## plot the residuals
-  output$plot.residuals2 <- renderPlot({
-    
-    InputModel.fit2() %>% 
-      ggplot(mapping = aes(x = fit, y = res)) +
-      geom_point(alpha = 0.3) +
-      geom_smooth() +
-      labs(x = "Fitted values", y = "Residuals") +
-      geom_hline(yintercept = 0, colour = "violet")
-    
-  })
-  
-  
-  
-  
-  output$qqplot.lm2 <- renderPlot({
-    
-    InputModel.fit2() %>%
-      ggplot(aes(sample = res)) +
-      geom_qq(na.rm = TRUE) +
-      geom_qq_line(color = "red", na.rm = TRUE) +
-      theme_bw() +
-      labs(y = "Residuals quantiles", x = "Theoretical quantiles")
-    
-    
-  })
+  # output$plot.residuals2 <- renderPlot({
+  #   
+  #   InputModel.fit2() %>% 
+  #     ggplot(mapping = aes(x = fit, y = res)) +
+  #     geom_hline(yintercept = 0, colour = "violet") +
+  #     geom_point(alpha = 0.3) +
+  #     geom_smooth() +
+  #     labs(x = "Fitted values", y = "Residuals")
+  #   
+  # })
+  # 
+  # 
+  # 
+  # 
+  # output$qqplot.lm2 <- renderPlot({
+  #   
+  #   InputModel.fit2() %>%
+  #     ggplot(aes(sample = res)) +
+  #     geom_qq(na.rm = TRUE) +
+  #     geom_qq_line(color = "red", na.rm = TRUE) +
+  #     theme_bw() +
+  #     labs(y = "Residuals quantiles", x = "Theoretical quantiles")
+  #   
+  #   
+  # })
   
   
   
@@ -1516,7 +1612,8 @@ server <- function(input, output, session){
          I<sub>LOC<sub>i</sub></sub> * x<sub>Fertilizer<sub>i</sub></sub> + 
          &beta;<sub>ZH , Fertilizer</sub> * 
          I<sub>ZH<sub>i</sub></sub> * x<sub>Fertilizer<sub>i</sub></sub> +
-         &epsilon;<sub>i</sub>, i = 1,..., ", dim.dataset))
+         &epsilon;<sub>i</sub>, &ensp; i = 1,..., ", dim.dataset), 
+         ",&ensp; <em>e</em> ~ N(&mu; , &sigma;<sub>&epsilon; </sub><sup>2</sup>)")
   })
   
   
@@ -1527,13 +1624,14 @@ server <- function(input, output, session){
     gg.fertilizer <- ggplot(dataset.inter(), mapping = aes(x = Fertilizer, 
                                                            y = Cob_weight)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       ggtitle("Cob_weight against Fertilizer")
     
     gg.site <- ggplot(dataset.inter(), mapping = aes(x = Site, 
                                                      y = Cob_weight,
                                                      colour = Site)) +
-      geom_violin(draw_quantiles = 0.5) +
+      geom_boxplot() +
+      geom_point(alpha = 0.2) +
       ggtitle("Cob_weight against Site")
     
     ggarrange(gg.fertilizer, gg.site)
@@ -1550,7 +1648,7 @@ server <- function(input, output, session){
                                           y = Cob_weight,
                                           colour = Site)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       ggtitle("Cob_weight against Fertilizer, highlighting Site")
   )
   
@@ -1578,7 +1676,7 @@ server <- function(input, output, session){
   output$plot.title.inter <- renderText({
     #req(n.simulate.inter())
     
-    HTML(paste0("<h4>","Plot of the data and the model","</h4>"))
+    HTML(paste0("<h4>","Fitted values of the linear model","</h4>"))
     
   })
   
@@ -1642,35 +1740,57 @@ server <- function(input, output, session){
   
   ## Diagnostic plots
   output$plot.diagnostic.lm.inter <- renderPlot({
-    par(mfrow = c(4, 1), mar = c(0.2, 1, 2, 1))
+    par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
+    )
+    plot(InputModel.lm.inter(), which = c(1, 2, 3, 5))
+    par(mfrow = c(1, 1))
+  })
+  
+  
+  
+  observeEvent(input$openPlotButton_panel3, {
+    output$modalUI_panel3 <- renderUI({
+      modalDialog(
+        id = "plotModal_panel3",
+        title = "Zoomed Plot",
+        plotOutput("plot.diagnostic.lm3_zoomed"),
+        easyClose = TRUE,
+      )
+      
+    })
+  })
+  
+  output$plot.diagnostic.lm3_zoomed <- renderPlot({
+    par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
+    )
     plot(InputModel.lm.inter(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
   
   ## plot the residuals
-  output$plot.residuals.inter <- renderPlot({
-    
-    InputModel.fit.inter() %>%
-      ggplot(mapping = aes(x = fit, y = res)) +
-      geom_point(alpha = 0.3) +
-      geom_smooth() +
-      labs(x = "Fitted values", y = "Residuals") +
-      geom_hline(yintercept = 0, colour = "violet")
-    
-  })
-  
-  
-  ## QQ-plot
-  output$qqplot.lm.inter <- renderPlot({
-    
-    InputModel.fit.inter() %>%
-      ggplot(aes(sample = res)) +
-      geom_qq(na.rm = TRUE) +
-      geom_qq_line(color = "red", na.rm = TRUE) +
-      theme_bw() +
-      labs(y = "Residuals quantiles", x = "Theoretical quantiles")
-    
-  })
+  # output$plot.residuals.inter <- renderPlot({
+  #   
+  #   InputModel.fit.inter() %>%
+  #     ggplot(mapping = aes(x = fit, y = res)) +
+  #     geom_hline(yintercept = 0, colour = "violet") +
+  #     geom_point(alpha = 0.3) +
+  #     geom_smooth() +
+  #     labs(x = "Fitted values", y = "Residuals") 
+  #   
+  # })
+  # 
+  # 
+  # ## QQ-plot
+  # output$qqplot.lm.inter <- renderPlot({
+  #   
+  #   InputModel.fit.inter() %>%
+  #     ggplot(aes(sample = res)) +
+  #     geom_qq(na.rm = TRUE) +
+  #     geom_qq_line(color = "red", na.rm = TRUE) +
+  #     theme_bw() +
+  #     labs(y = "Residuals quantiles", x = "Theoretical quantiles")
+  #   
+  # })
   
   
   #################### Forth Panel - Linear model with quadratic effects #######################
@@ -1722,7 +1842,8 @@ server <- function(input, output, session){
          &beta;<sub>ZH</sub> * I<sub>ZH<sub>i</sub></sub> + 
          &beta;<sub>Fertilizer<sup>2</sup></sub> *
          x<sup>2</sup><sub>Fertilizer<sup>2</sup><sub>i</sub></sub> + 
-         &epsilon;<sub>i</sub>, i = 1,..., ", dim.dataset))
+         &epsilon;<sub>i</sub>, &ensp; i = 1,..., ", dim.dataset), 
+         ",&ensp; <em>e</em> ~ N(&mu; , &sigma;<sub>&epsilon; </sub><sup>2</sup>)")
   })
   
   
@@ -1733,13 +1854,14 @@ server <- function(input, output, session){
     gg.fertilizer <- ggplot(dataset.quad(), mapping = aes(x = Fertilizer, 
                                                           y = Cob_weight)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       ggtitle("Cob_weight against Fertilizer")
     
     gg.site <-  ggplot(dataset.quad(), mapping = aes(x = Site, 
                                                      y = Cob_weight,
                                                      colour = Site)) +
-      geom_violin(draw_quantiles = 0.5) +
+      geom_boxplot() +
+      geom_point(alpha = 0.2) +
       ggtitle("Cob_weight against Site")
     
     ggarrange(gg.fertilizer, gg.site)
@@ -1761,7 +1883,7 @@ server <- function(input, output, session){
                                          y = Cob_weight, 
                                          colour = Site)) +
       geom_point(alpha = 0.3) +
-      geom_smooth(se = FALSE) +
+      geom_smooth(se = TRUE) +
       ggtitle("Cob_weight against Fertilizer, highlighting Site")
     
   })
@@ -1786,7 +1908,7 @@ server <- function(input, output, session){
   output$plot.title.quad <- renderText({
     #req(n.simulate.quad())
     
-    HTML(paste0("<h4>","Fitted values and model","</h4>"))
+    HTML(paste0("<h4>","Fitted values of the linear model","</h4>"))
     
   })
   
@@ -1856,41 +1978,62 @@ server <- function(input, output, session){
   
   ## Diagnostic plots
   output$plot.diagnostic.lm.quad <- renderPlot({
-    par(mfrow = c(4, 1), mar = c(0.2, 1, 2, 1))
+    par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
+    )
+    plot(InputModel.lm.quad(), which = c(1, 2, 3, 5))
+    par(mfrow = c(1, 1))
+  })
+  
+  
+  observeEvent(input$openPlotButton_panel4, {
+    output$modalUI_panel4 <- renderUI({
+      modalDialog(
+        id = "plotModal_panel4",
+        title = "Zoomed Plot",
+        plotOutput("plot.diagnostic.lm4_zoomed"),
+        easyClose = TRUE,
+      )
+      
+    })
+  })
+  
+  output$plot.diagnostic.lm4_zoomed <- renderPlot({
+    par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
+    )
     plot(InputModel.lm.quad(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
   
   
   ## plot the residuals
-  output$plot.residuals.quad <- renderPlot({
-    
-    InputModel.fit.quad() %>%
-      ggplot(mapping = aes(x = fit, y = res)) +
-      geom_point(alpha = 0.3) +
-      geom_smooth() +
-      labs(x = "Fitted values", y = "Residuals") +
-      geom_hline(yintercept = 0, colour = "violet")
-    
-  })
+  # output$plot.residuals.quad <- renderPlot({
+  #   
+  #   InputModel.fit.quad() %>%
+  #     ggplot(mapping = aes(x = fit, y = res)) +
+  #     geom_hline(yintercept = 0, colour = "violet") +
+  #     geom_point(alpha = 0.3) +
+  #     geom_smooth() +
+  #     labs(x = "Fitted values", y = "Residuals") 
+  #   
+  # })
+  # 
+  # 
+  # ## QQ-plot
+  # 
+  # output$qqplot.lm.quad <- renderPlot({
+  #   
+  #   InputModel.fit.quad() %>%
+  #     ggplot(aes(sample = res)) +
+  #     geom_qq(na.rm = TRUE) +
+  #     geom_qq_line(color = "red", na.rm = TRUE) +
+  #     theme_bw() +
+  #     labs(y = "Residuals quantiles", x = "Theoretical quantiles")
+  #   
+  # })
   
   
-  ## QQ-plot
   
-  output$qqplot.lm.quad <- renderPlot({
-    
-    InputModel.fit.quad() %>%
-      ggplot(aes(sample = res)) +
-      geom_qq(na.rm = TRUE) +
-      geom_qq_line(color = "red", na.rm = TRUE) +
-      theme_bw() +
-      labs(y = "Residuals quantiles", x = "Theoretical quantiles")
-    
-  })
-  
-  
-  
-  #################### Fifth Panel - Generalized linear model - Binomial #######################
+  #################### Fifth Panel - Generalised linear model - Binomial #######################
   
   
   ## Simulate dataset -----------------------------------------------------------
@@ -1940,7 +2083,7 @@ server <- function(input, output, session){
     HTML(paste0("log( <sup>p<sub>i</sub></sup> &frasl; <sub>1-p<sub>i</sub></sub> ) = &beta;<sub>0</sub> + 
          &beta;<sub>Fertilizer</sub> * x<sub>Fertilizer<sub>i</sub></sub> +
          &beta;<sub>LOC</sub> * I<sub>LOC<sub>i</sub></sub> + 
-         &beta;<sub>ZH</sub> * I<sub>ZH<sub>i</sub></sub>, 
+         &beta;<sub>ZH</sub> * I<sub>ZH<sub>i</sub></sub>, &ensp;
                 i = 1,..., ", dim.dataset))
   })
   
@@ -1952,7 +2095,7 @@ server <- function(input, output, session){
                                                              y = Cob_pres)) +
       geom_point(alpha = 0.3) +
       geom_smooth(method = "glm",
-                  se = FALSE,
+                  se = TRUE,
                   method.args = list(family = "binomial")) +
       ggtitle("Cob_pres against Fertilizer")
     
@@ -2027,15 +2170,15 @@ server <- function(input, output, session){
                                             colour = Site)) +
       geom_point(alpha = 0.3) +
       geom_smooth(method = "glm",
-                  se = FALSE,
+                  se = TRUE,
                   method.args = list(family = "binomial")) +
       ggtitle("Cob_pres against Fertilizer, highlighting Site")
   })
   
-  ## Generalized linear model
+  ## Generalised linear model
   InputModel.glm.bin <- reactive({
     glm(Cob_pres ~ Fertilizer + Site,
-        family = binomial(link = "logit"),
+        family = binomial,
         data = dataset.glm.bin())
   })
   
@@ -2057,7 +2200,7 @@ server <- function(input, output, session){
   output$plot.title.glm.bin <- renderText({
     #req(n.simulate.glm.bin())
     
-    HTML(paste0("<h4>","Fitted values and model","</h4>"))
+    HTML(paste0("<h4>","Fitted values of the generalised linear model","</h4>"))
   })
   
   
@@ -2073,13 +2216,13 @@ server <- function(input, output, session){
       geom_point(alpha = 0.3, mapping = aes(colour = Site)) +
       
       
-      ## Generalized linear model for Lausanne
+      ## Generalised linear model for Lausanne
       stat_function(fun = function(x){
         ilogit(coef.glm.bin["(Intercept)"] + 
                  coef.glm.bin["Fertilizer"] * x)},
         color = "red") +
       
-      ## Generalized linear model for Locarno
+      ## Generalised linear model for Locarno
       stat_function(fun = function(x){
         ilogit(coef.glm.bin["(Intercept)"] + 
                  coef.glm.bin["SiteLocarno"] + 
@@ -2098,14 +2241,14 @@ server <- function(input, output, session){
   
   
   
-  ## Plot the residuals
-  output$plot.residuals.bin <- renderPlot({
-    TA.plot(InputModel.glm.bin(),
-            main = "TA-plot for GLM with binary response",
-            show.call = FALSE)
-  })
+  # ## Plot the residuals
+  # output$plot.residuals.bin <- renderPlot({
+  #   TA.plot(InputModel.glm.bin(),
+  #           main = "TA-plot for GLM with binary response",
+  #           show.call = FALSE)
+  # })
   
-  #################### Sixth Panel - Generalized linear model with interactions - Binomial #######################
+  #################### Sixth Panel - Generalised linear model with interactions - Binomial #######################
   
   
   ## Simulate dataset ----------------------------------------------------------
@@ -2174,7 +2317,7 @@ server <- function(input, output, session){
          &beta;<sub>LOC , Fertilizer</sub> * I<sub>LOC<sub>i</sub></sub> * 
          x<sub>Fertilizer<sub>i</sub></sub> + 
          &beta;<sub>ZH , Fertilizer</sub> * I<sub>ZH<sub>i</sub></sub> * 
-                x<sub>Fertilizer<sub>i</sub></sub>, i = 1,..., ", dim.dataset))
+                x<sub>Fertilizer<sub>i</sub></sub>, &ensp; i = 1,..., ", dim.dataset))
   })
   
   ## Plots --------------------------------------------------------------------
@@ -2187,7 +2330,7 @@ server <- function(input, output, session){
                                           y = Cob_pres)) +
       geom_point(alpha = 0.3) +
       geom_smooth(method = "glm",
-                  se = FALSE,
+                  se = TRUE,
                   method.args = list(family = "binomial")) 
     
     
@@ -2263,16 +2406,16 @@ server <- function(input, output, session){
                          y = Cob_pres, colour = Site)) +
       geom_point(alpha = 0.3) +
       geom_smooth(method = "glm",
-                  se = FALSE,
+                  se = TRUE,
                   method.args = list(family = "binomial")) 
   })
   
   
   
-  ## Generalized linear model
+  ## Generalised linear model
   InputModel.glm.bin.inter <- reactive({
     glm(Cob_pres ~  Fertilizer * Site,
-        family = binomial(link = "logit"),
+        family = binomial,
         data = dataset.glm.bin.inter())
   })
   
@@ -2294,7 +2437,7 @@ server <- function(input, output, session){
   output$plot.title.glm.bin.inter <- renderText({
     #req(n.simulate.glm.bin.inter())
     
-    HTML(paste0("<h4>","Plot of the data and the model","</h4>"))
+    HTML(paste0("<h4>","Fitted values of the generalised linear model","</h4>"))
   })
   # 
   ## Plot the dataset and the linear model
@@ -2308,13 +2451,13 @@ server <- function(input, output, session){
       geom_point(alpha = 0.3, mapping = aes(color = Site)) +
       
       
-      ## Generalized linear model for Lausanne
+      ## Generalised linear model for Lausanne
       stat_function(fun = function(x){
         ilogit(coef.glm.bin.inter["(Intercept)"] +
                  coef.glm.bin.inter["Fertilizer"] * x)},
         color = "red") +
       
-      ## Generalized linear model for Locarno
+      ## Generalised linear model for Locarno
       stat_function(fun = function(x){
         ilogit(coef.glm.bin.inter["(Intercept)"] + 
                  coef.glm.bin.inter["SiteLocarno"] + 
@@ -2337,7 +2480,7 @@ server <- function(input, output, session){
             show.call = FALSE)
   })
   
-  #################### Seventh Panel - Generalized linear model with quadratic effects - binomial #######################
+  #################### Seventh Panel - Generalised linear model with quadratic effects - binomial #######################
   
   
   ## Simulate dataset ----------------------------------------------------------
@@ -2392,7 +2535,7 @@ server <- function(input, output, session){
     &beta;<sub>LOC</sub> * I<sub>LOC<sub>i</sub></sub> + 
          &beta;<sub>ZH</sub> * I<sub>ZH<sub>i</sub></sub> + 
           &beta;<sub>Fertilizer<sup>2</sup></sub> * x<sup>2</sup><sub>Fertilizer<sub>i</sub><sup>2</sup></sub>, 
-         i = 1,..., ", dim.dataset))
+        &ensp; i = 1,..., ", dim.dataset))
   })
   
   
@@ -2407,7 +2550,7 @@ server <- function(input, output, session){
                                           y = Cob_nb)) +
       geom_point(alpha = 0.3) +
       geom_smooth(method = "glm",
-                  se = FALSE,
+                  se = TRUE,
                   method.args = list(family = "binomial")) 
     
     ## CI ------------
@@ -2486,7 +2629,7 @@ server <- function(input, output, session){
                          colour = Site)) +
       geom_point(alpha = 0.3) +
       geom_smooth(method = "glm",
-                  se = FALSE,
+                  se = TRUE,
                   method.args = list(family = "binomial")) 
     
   })
@@ -2494,10 +2637,10 @@ server <- function(input, output, session){
   
   
   
-  ## Generalized linear model
+  ## Generalised linear model
   InputModel.glm.quad.eff <- reactive({
     glm(Cob_nb ~ Fertilizer + Site + I(Fertilizer^2),
-        family = binomial(link = "logit"),
+        family = binomial,
         data = dataset.glm.quad.eff())
   })
   
@@ -2519,7 +2662,7 @@ server <- function(input, output, session){
   output$plot.title.glm.quad.eff <- renderText({
     # req(n.simulate.glm.quad.eff())
     
-    HTML(paste0("<h4>","Plot of the data and the model","</h4>"))
+    HTML(paste0("<h4>","Fitted values of the generalised linear model","</h4>"))
   })
   # 
   ## Plot the dataset and the model
@@ -2534,7 +2677,7 @@ server <- function(input, output, session){
       geom_point(alpha = 0.3, mapping = aes(color = Site)) +
       
       
-      ## Generalized linear model for Lausanne
+      ## Generalised linear model for Lausanne
       stat_function(fun = function(x){
         ilogit(coef.glm.quad.eff["(Intercept)"] + 
                  coef.glm.quad.eff["Fertilizer"] * x + 
@@ -2542,7 +2685,7 @@ server <- function(input, output, session){
         )},
         color = "red") +
       
-      ## Generalized linear model for Locarno
+      ## Generalised linear model for Locarno
       stat_function(fun = function(x){
         ilogit(coef.glm.quad.eff["(Intercept)"] +
                  coef.glm.quad.eff["SiteLocarno"] + 
@@ -2570,7 +2713,7 @@ server <- function(input, output, session){
   
   
   
-  #################### Ninth Panel - Generalized linear model - poisson #######################
+  #################### Ninth Panel - Generalised linear model - poisson #######################
   
   
   
@@ -2617,7 +2760,7 @@ server <- function(input, output, session){
     HTML(paste0("log(y<sub>i</sub>) = &beta;<sub>0</sub> +
          &beta;<sub>Fertilizer</sub> * x<sub>Fertilizer<sub>i</sub></sub>
           + &beta;<sub>LOC</sub> * I<sub>LOC<sub>i</sub></sub> + 
-         &beta;<sub>ZH</sub> * I<sub>ZH<sub>i</sub></sub>, i = 1,..., ", dim.dataset))
+         &beta;<sub>ZH</sub> * I<sub>ZH<sub>i</sub></sub>,&ensp; i = 1,..., ", dim.dataset))
   })
   
   
@@ -2630,13 +2773,14 @@ server <- function(input, output, session){
     gg.fertilizer <- ggplot(dataset.glm.pois(), mapping = aes(x = Fertilizer, 
                                                               y = Cob_nb)) +
       geom_point(alpha = 0.3) + 
-      geom_smooth() +
+      geom_smooth(se = TRUE) +
       ggtitle("Cob_nb against Fertilizer")
     
     gg.site <- ggplot(dataset.glm.pois(), mapping = aes(x = Site, 
                                                         y = Cob_nb, 
                                                         colour = Site)) +
-      geom_violin(draw_quantiles = 0.5) +
+      geom_boxplot() +
+      geom_point(alpha = 0.2) +
       ggtitle("Cob_nb against Site")
     ggarrange(gg.fertilizer, gg.site)
     
@@ -2654,14 +2798,14 @@ server <- function(input, output, session){
                                              y = Cob_nb, 
                                              colour = Site)) +
       geom_point(alpha = 0.3) + 
-      geom_smooth() +
+      geom_smooth(se = TRUE) +
       ggtitle("Cob_nb against Fertilizer, highlighting Site")
     
   })
   
   
   
-  ## Generalized linear model
+  ## Generalised linear model
   InputModel.glm.pois <- reactive({
     glm(Cob_nb ~ Fertilizer + Site,
         family = poisson,
@@ -2687,7 +2831,7 @@ server <- function(input, output, session){
   output$plot.title.glm.pois <- renderText({
     # req(n.simulate.glm.pois())
     
-    HTML(paste0("<h4>","Plot of the data and the model","</h4>"))
+    HTML(paste0("<h4>","Fitted values of the generalised linear model","</h4>"))
   })
   # 
   ## Plot the dataset and the model
@@ -2736,7 +2880,7 @@ server <- function(input, output, session){
   })
   
   
-  #################### Tenth Panel - Generalized linear model with interactions - poisson #######################
+  #################### Tenth Panel - Generalised linear model with interactions - poisson #######################
   
   ## Simulate dataset ----------------------------------------------------------
   
@@ -2774,7 +2918,7 @@ server <- function(input, output, session){
   }) ## End eventReactive
   
   
-  ## Generalized linear model
+  ## Generalised linear model
   InputModel.glm.pois.inter <- reactive({
     glm(Cob_nb ~  Fertilizer * Site,
         family = poisson,
@@ -2800,7 +2944,7 @@ server <- function(input, output, session){
           I<sub>LOC<sub>i</sub></sub> * x<sub>Fertilizer<sub>i</sub></sub> + 
          &beta;<sub>ZH , Fertilizer</sub> * 
                 I<sub>ZH<sub>i</sub></sub> * x<sub>Fertilizer<sub>i</sub></sub>,
-                i = 1,..., ", dim.dataset))
+                &ensp; i = 1,..., ", dim.dataset))
   })
   
   ## Plots --------------------------------------------------------------------
@@ -2813,14 +2957,15 @@ server <- function(input, output, session){
                             mapping = aes(x = Fertilizer, 
                                           y = Cob_nb)) +
       geom_point(alpha = 0.3) +
-      geom_smooth() +
+      geom_smooth(se = TRUE) +
       ggtitle("Cob_nb against Fertilizer")
     
     gg.site <- ggplot(dataset.glm.pois.inter(),
                       mapping = aes(x = Site, 
                                     y = Cob_nb, 
                                     colour = Site)) +
-      geom_violin(draw_quantiles = 0.5) +
+      geom_boxplot() +
+      geom_point(alpha = 0.2) +
       ggtitle("Cob_nb against Site")
     
     ggarrange(gg.fertilizer, gg.site)
@@ -2840,7 +2985,7 @@ server <- function(input, output, session){
                          y = Cob_nb, 
                          colour = Site)) +
       geom_point(alpha = 0.3) +
-      geom_smooth() +
+      geom_smooth(se = TRUE) +
       ggtitle("Cob_nb against Fertilizer, highlighting Site")
     
   })
@@ -2856,7 +3001,7 @@ server <- function(input, output, session){
   output$plot.title.glm.pois.inter <- renderText({
     # req(n.simulate.glm.pois.inter())
     
-    HTML(paste0("<h4>","Plot of the data and the model","</h4>"))
+    HTML(paste0("<h4>","Fitted values of the generalised linear model","</h4>"))
   })
   # 
   ## Plot the dataset and the model
@@ -2913,14 +3058,14 @@ server <- function(input, output, session){
     
     if (c.type.error() == "Log-normal distribution of the error") {
       
-      HTML("<p>The following situation represents some data that are fitted
+      HTML("<p>The following situation represents some data fitted
       with a simple linear model when, in reality, the assumption of
       normality of the error does not hold.</p>
            <p>Indeed, the errors are log-normally distributed.</p>")
       
     } else if (c.type.error() == "Fit a model without interactions when needed") {
       
-      HTML("<p>The following situation represents some data that are fitted 
+      HTML("<p>The following situation represents some data fitted 
       with a simple linear model without interaction when, in reality,
       some interaction is needed.</p>
       <p>Suppose we are studying the effect of a new medication on blood pressure, 
@@ -2931,21 +3076,21 @@ server <- function(input, output, session){
            no significant effect of medication on blood pressure for both age groups,
            whereas the effect is clearly present:
            positive for old people and negative for young people.</p>")
-    
+      
     } else if (c.type.error() == "Non-constant variance") {
-        
-      HTML("<p> The following situation represents some data that are fitted
+      
+      HTML("<p> The following situation represents some data fitted
       with a simple linear model when, in reality, the assumption of
-      constant variance does not hold.<.</p>
-           <p>Indeed, the variance increases with the increase of Fertilizer.</p>")
+      constant variance does not hold.</p>
+           <p>Indeed, the variance increases with the increase of <em>Fertilizer</em>.</p>")
       
     } else if (c.type.error() == "Fit a model without quadratic effects when needed") {
-        
-      HTML("<p> The following situation represents some data that are fitted
+      
+      HTML("<p> The following situation represents some data fitted
       with a simple linear model without any quadratic effect when, in reality,
       a quadratic effect is needed.
-           <p>Indeed, Fertilizer has a quadratic effect on the response variable.</p>")
-      }
+           <p>Indeed, <em>Fertilizer</em> has a quadratic effect on the response variable.</p>")
+    }
     
   })
   
@@ -3080,7 +3225,7 @@ server <- function(input, output, session){
   output$plot.title.errors <- renderText({
     req(n.simulate.errors())
     
-    HTML(paste0("<h4>","Plot of the data and the model","</h4>"))
+    HTML(paste0("<h4>","Fitted values of the generalised linear model","</h4>"))
   })
   
   ## Plot the dataset and the linear model
@@ -3172,7 +3317,7 @@ server <- function(input, output, session){
   output$something.amiss <- renderText({
     req(n.simulate.errors())
     
-    HTML("It is already evident from the above plots that 
+    HTML("It is already evident from the above plot that 
          something is amiss, but the diagnostic plots below 
          provide an even clearer representation of the issue.")
     
@@ -3182,36 +3327,58 @@ server <- function(input, output, session){
   
   ## plot the diagnostic plots
   output$plot.diagnostics.errors <- renderPlot({
-    par(mfrow = c(4, 1), mar = c(0.2, 1, 2, 1))
+    par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
+    )
     plot(InputModel.errors(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
   
   ## plot the residuals
-  output$plot.residuals.errors <- renderPlot({
-    
-    InputModel.fit.errors() %>%
-      ggplot(mapping = aes(x = fit, y = res)) +
-      geom_point(alpha = 0.3) +
-      geom_smooth() +
-      labs(x = "Fitted values", y = "Residuals") +
-      geom_hline(yintercept = 0, colour = "violet")
-    
+  # output$plot.residuals.errors <- renderPlot({
+  #   
+  #   InputModel.fit.errors() %>%
+  #     ggplot(mapping = aes(x = fit, y = res)) +
+  #     geom_hline(yintercept = 0, colour = "violet") +
+  #     geom_point(alpha = 0.3) +
+  #     geom_smooth() +
+  #     labs(x = "Fitted values", y = "Residuals")
+  # 
+  #   
+  # })
+  # 
+  # 
+  # 
+  # 
+  # output$qqplot.errors <- renderPlot({
+  #   
+  #   InputModel.fit.errors() %>%
+  #     ggplot(aes(sample = res)) +
+  #     geom_qq(na.rm = TRUE) +
+  #     geom_qq_line(color = "red", na.rm = TRUE) +
+  #     theme_bw() +
+  #     labs(y = "Residuals quantiles", x = "Theoretical quantiles")
+  #   
+  #   
+  # })
+  
+  
+  observeEvent(input$openPlotButton_panel11, {
+    output$modalUI_panel11 <- renderUI({
+      modalDialog(
+        id = "plotModal_panel11",
+        title = "Zoomed Plot",
+        plotOutput("plot.diagnostic.lm11_zoomed"),
+        easyClose = TRUE,
+      )
+      
+    })
   })
   
-  
-  
-  
-  output$qqplot.errors <- renderPlot({
-    
-    InputModel.fit.errors() %>%
-      ggplot(aes(sample = res)) +
-      geom_qq(na.rm = TRUE) +
-      geom_qq_line(color = "red", na.rm = TRUE) +
-      theme_bw() +
-      labs(y = "Residuals quantiles", x = "Theoretical quantiles")
-    
-    
+  output$plot.diagnostic.lm11_zoomed <- renderPlot({
+    par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
+    )
+    plot(InputModel.errors(), which = c(1, 2, 3, 5))
+    par(mfrow = c(1, 1))
   })
   
   
@@ -3236,7 +3403,7 @@ server <- function(input, output, session){
   })
   
   
-  #################### Violating the assumptions of a generalized linear model - Binomial #######################
+  #################### Violating the assumptions of a generalised linear model - Binomial #######################
   
   
   dataset.errors.glm.bin <- eventReactive(n.simulate.errors.glm.bin(), {
@@ -3283,7 +3450,7 @@ server <- function(input, output, session){
     req(n.simulate.errors.glm.bin())
     
     glm(Cob_nb ~ Fertilizer + Site,
-        family = binomial(link = "logit"),
+        family = binomial,
         data = dataset.errors.glm.bin())
   })
   
@@ -3307,7 +3474,7 @@ server <- function(input, output, session){
   output$plot.title.errors.glm.bin <- renderText({
     req(n.simulate.errors.glm.bin())
     
-    HTML(paste0("<h4>","Plot of the data and the model","</h4>"))
+    HTML(paste0("<h4>","Fitted values of the linear model","</h4>"))
   })
   
   ## Plot the dataset and the linear model
@@ -3321,13 +3488,13 @@ server <- function(input, output, session){
       geom_point(alpha = 0.3, mapping = aes(color = Site)) +
       
       
-      ## Generalized linear model for Lausanne
+      ## Generalised linear model for Lausanne
       stat_function(fun = function(x){
         ilogit(coef.glm.errors.bin["(Intercept)"] + 
                  coef.glm.errors.bin["Fertilizer"] * x)},
         color = "red") +
       
-      ## Generalized linear model for Locarno
+      ## Generalised linear model for Locarno
       stat_function(fun = function(x){
         ilogit(coef.glm.errors.bin["(Intercept)"] + 
                  coef.glm.errors.bin["SiteLocarno"] + 
@@ -3359,7 +3526,7 @@ server <- function(input, output, session){
   
   
   
-  #################### Violating the assumptions of a generalized linear model - Poisson #######################
+  #################### Violating the assumptions of a Generalised linear model - Poisson #######################
   
   
   dataset.errors.glm.pois <- eventReactive(n.simulate.errors.glm.pois(), {
@@ -3447,7 +3614,7 @@ server <- function(input, output, session){
       geom_point(alpha = 0.3, mapping = aes(color = Site)) +
       
       
-      ## Generalized linear model for Lausanne
+      ## Generalised linear model for Lausanne
       geom_line(mapping = aes(x = sort(Fertilizer), 
                               y = exp(predict(InputModel.errors.glm.pois(), 
                                               newdata = data.frame(Fertilizer = sort(Fertilizer), 
@@ -3455,7 +3622,7 @@ server <- function(input, output, session){
                 lwd = 1, 
                 col = "red") +
       
-      ## Generalized linear model for Locarno
+      ## Generalised linear model for Locarno
       geom_line(mapping = aes(x = sort(Fertilizer), 
                               y = exp(predict(InputModel.errors.glm.pois(), 
                                               newdata = data.frame(Fertilizer = sort(Fertilizer), 
@@ -3505,9 +3672,9 @@ server <- function(input, output, session){
          <p> The data we are going to analyse come from the {lme4} package and represent
          the number of ticks on the heads of red grouse chicks sampled in the field. </p>
          
-         <p> TICKS represents the number of ticks sampled, 
-         HEIGHT represents the height above sea level, 
-         and YEAR represents the year (1900 + YEAR). </p>")
+         <p> <em>TICKS</em> represents the number of ticks sampled, 
+         <em>HEIGHT</em> represents the height above sea level, 
+         and <em>YEAR</em> represents the year (1900 + <em>YEAR</em>). </p>")
     
   })
   
@@ -3583,13 +3750,13 @@ server <- function(input, output, session){
     gg.height <- ggplot(grouseticks, mapping = aes(x = HEIGHT, 
                                                    y = TICKS)) +
       geom_point(alpha = 0.3) +
-      geom_smooth()
+      geom_smooth(se = TRUE)
     
     gg.year <- ggplot(grouseticks, mapping = aes(x = YEAR, 
                                                  y = TICKS, 
                                                  colour = YEAR)) +
-      geom_violin(draw_quantiles = 0.5) +
-      geom_smooth()
+      geom_boxplot() +
+      geom_point(alpha = 0.2)
     
     ggarrange(gg.height, gg.year, ncol = 1)
   })
