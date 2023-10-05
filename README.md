@@ -19,8 +19,8 @@ To install this package on your computer, you have to install the {devtools} pac
 
 Follow these steps:
 
-install.packages(devtools)
-library(devtools)
-install_github("zurich-data-scientists/shinyBio")
+install.packages(devtools);
+library(devtools);
+install_github("zurich-data-scientists/shinyBio");
 shinyBio::run_app()
 
