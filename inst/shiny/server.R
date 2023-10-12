@@ -32,7 +32,9 @@ server <- function(input, output, session){
     and periods of drought. </p>
       <p> After completing this study, a second one was conducted, 
          this time focusing on the observation of the number of corn cobs 
-         rather than their weight. The study was again based on 306 corn plants. </p>")
+         rather than their weight. The study was again based on 306 corn plants.</p> <br><br><br><br> <p>
+         Nisia Trisconi and Matteo Tanadini collaborated to develop the concepts present in
+         this application, with Nisia handling the coding and implementation.</p> ")
     
     
     
@@ -462,14 +464,14 @@ server <- function(input, output, session){
   output$plot.diagnostic.lm1 <- renderPlot({
     par(mfrow = c(2, 2)#, 
         #mar = c(1, 2, 2, 2)
-    )
+        )
     plot(InputModel.lm1(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
   
   
   
-  
+
   observeEvent(input$openPlotButton_panel1, {
     output$modalUI_panel1 <- renderUI({
       modalDialog(
@@ -478,17 +480,17 @@ server <- function(input, output, session){
         plotOutput("plot.diagnostic.lm1_zoomed"),
         easyClose = TRUE,
       )
-      
+
     })
   })
-  
+
   output$plot.diagnostic.lm1_zoomed <- renderPlot({
     par(mfrow = c(2, 2) #, mar = c(0.2, 1, 2, 1)
-    )
+        )
     plot(InputModel.lm1.5(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
-  
+
   
   # ## plot the residuals
   # output$plot.residuals1 <- renderPlot({
@@ -733,30 +735,30 @@ server <- function(input, output, session){
                             mapping = aes(x = Fertilizer, 
                                           y = fitted.lm)) +
       geom_point(alpha = 0.3, mapping = aes(colour = Site))# +
-    
-    ## Linear model for Site Lausanne
-    # geom_abline(intercept = coef.lm["(Intercept)"] +
-    #               coef.lm["log(Plant_height)"] * log.mean.height,
-    #             slope = coef.lm["Fertilizer"],
-    #             alpha = 0.5,
-    #             color = "red") +
-    # 
-    # ## Linear model for Site Locarno
-    # geom_abline(intercept = coef.lm["(Intercept)"] + 
-    #               coef.lm["SiteLocarno"] +
-    #               coef.lm["log(Plant_height)"] * log.mean.height,
-    #             slope = coef.lm["Fertilizer"],
-    #             alpha = 0.5,
-    #             color = "green4") +
-    # 
-    # ## Linear model for Site Zurich
-    # geom_abline(intercept = coef.lm["(Intercept)"] + 
-    #               coef.lm["SiteZurich"] + 
-    #               coef.lm["log(Plant_height)"] * log.mean.height,
-    #             slope = coef.lm["Fertilizer"],
-    #             alpha = 0.5,
-    #             color = "blue") +
-    # ggtitle("Fitted values of the model") 
+      
+      ## Linear model for Site Lausanne
+      # geom_abline(intercept = coef.lm["(Intercept)"] +
+      #               coef.lm["log(Plant_height)"] * log.mean.height,
+      #             slope = coef.lm["Fertilizer"],
+      #             alpha = 0.5,
+      #             color = "red") +
+      # 
+      # ## Linear model for Site Locarno
+      # geom_abline(intercept = coef.lm["(Intercept)"] + 
+      #               coef.lm["SiteLocarno"] +
+      #               coef.lm["log(Plant_height)"] * log.mean.height,
+      #             slope = coef.lm["Fertilizer"],
+      #             alpha = 0.5,
+      #             color = "green4") +
+      # 
+      # ## Linear model for Site Zurich
+      # geom_abline(intercept = coef.lm["(Intercept)"] + 
+      #               coef.lm["SiteZurich"] + 
+      #               coef.lm["log(Plant_height)"] * log.mean.height,
+      #             slope = coef.lm["Fertilizer"],
+      #             alpha = 0.5,
+      #             color = "blue") +
+      # ggtitle("Fitted values of the model") 
     
     
     
@@ -778,32 +780,32 @@ server <- function(input, output, session){
                                       y = fitted.lm)) +
       geom_point(alpha = 0.3, mapping = aes(colour = Site)) +
       scale_x_log10() #+
-    # 
-    # ## Linear model for Site Lausanne
-    # geom_abline(intercept = coef.lm["(Intercept)"] + 
-    #               coef.lm["Fertilizer"] * mean.fertilizer,
-    #             slope = exp(coef.lm["log(Plant_height)"]),
-    #             alpha = 0.5,
-    #             color = "red") +
-    # 
-    # 
-    # ## Linear model for Site Locarno
-    # geom_abline(intercept = coef.lm["(Intercept)"] + 
-    #               coef.lm["SiteLocarno"] + 
-    #               coef.lm["Fertilizer"] * mean.fertilizer,
-    #             slope = exp(coef.lm["log(Plant_height)"]),
-    #             alpha = 0.5,
-    #             color = "green4") +
-    # 
-    # ## Linear model for Site Zurich
-    # geom_abline(intercept = coef.lm["(Intercept)"] + 
-    #               coef.lm["SiteZurich"] + 
-    #               coef.lm["Fertilizer"] * mean.fertilizer,
-    #             slope = exp(coef.lm["log(Plant_height)"]),
-    #             alpha = 0.5,
-    #             color = "blue") +
-    # ggtitle("Fitted values of the linear model") 
-    # 
+      # 
+      # ## Linear model for Site Lausanne
+      # geom_abline(intercept = coef.lm["(Intercept)"] + 
+      #               coef.lm["Fertilizer"] * mean.fertilizer,
+      #             slope = exp(coef.lm["log(Plant_height)"]),
+      #             alpha = 0.5,
+      #             color = "red") +
+      # 
+      # 
+      # ## Linear model for Site Locarno
+      # geom_abline(intercept = coef.lm["(Intercept)"] + 
+      #               coef.lm["SiteLocarno"] + 
+      #               coef.lm["Fertilizer"] * mean.fertilizer,
+      #             slope = exp(coef.lm["log(Plant_height)"]),
+      #             alpha = 0.5,
+      #             color = "green4") +
+      # 
+      # ## Linear model for Site Zurich
+      # geom_abline(intercept = coef.lm["(Intercept)"] + 
+      #               coef.lm["SiteZurich"] + 
+      #               coef.lm["Fertilizer"] * mean.fertilizer,
+      #             slope = exp(coef.lm["log(Plant_height)"]),
+      #             alpha = 0.5,
+      #             color = "blue") +
+      # ggtitle("Fitted values of the linear model") 
+      # 
     
     
     gg.height.values <- if ( input$observed.values.lm1.5 ) {
@@ -834,7 +836,7 @@ server <- function(input, output, session){
   
   output$plot.diagnostic.lm1.5 <- renderPlot({
     par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
-    )
+        )
     plot(InputModel.lm1.5(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
@@ -881,7 +883,7 @@ server <- function(input, output, session){
   
   output$plot.diagnostic.lm1.5_zoomed <- renderPlot({
     par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
-    )
+        )
     plot(InputModel.lm1.5(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
@@ -1344,14 +1346,14 @@ server <- function(input, output, session){
       geom_point(alpha = 0.3, colour = "violet") +
       scale_x_log10() +
       ggtitle("Fitted values for Grain variety of cob against log of Plant_height in Lausanne") #+
-    
-    
-    ## Linear model for Site Lausanne and Grain variety of cob
-    # geom_abline(intercept = coef.lm["(Intercept)"] + 
-    #               coef.lm["Fertilizer"] * mean.fertilizer,
-    #             slope = exp(coef.lm["log(Plant_height)"]),
-    #             alpha = 0.5,
-    #             color = "red") 
+      
+      
+      ## Linear model for Site Lausanne and Grain variety of cob
+      # geom_abline(intercept = coef.lm["(Intercept)"] + 
+      #               coef.lm["Fertilizer"] * mean.fertilizer,
+      #             slope = exp(coef.lm["log(Plant_height)"]),
+      #             alpha = 0.5,
+      #             color = "red") 
     
     
     
@@ -1374,15 +1376,15 @@ server <- function(input, output, session){
                                           y = fitted.lm)) +
       geom_point(alpha = 0.3, colour = "violet") +
       ggtitle("Fitted values for Grain variety of cob against Fertilizer in Lausanne")# +
-    
-    
-    ## Linear model for Site Lausanne and Grain variety of cob
-    # geom_abline(intercept = coef.lm["(Intercept)"] +
-    #               coef.lm["log(Plant_height)"] * log.mean.height,
-    #             slope = coef.lm["Fertilizer"],
-    #             alpha = 0.5,
-    #             color = "red") 
-    # 
+      
+      
+      ## Linear model for Site Lausanne and Grain variety of cob
+      # geom_abline(intercept = coef.lm["(Intercept)"] +
+      #               coef.lm["log(Plant_height)"] * log.mean.height,
+      #             slope = coef.lm["Fertilizer"],
+      #             alpha = 0.5,
+      #             color = "red") 
+      # 
     
     ## Add (or not) observed values
     gg.fertilizer.values <- if ( input$observed.values.lm2 ) {
@@ -1416,12 +1418,12 @@ server <- function(input, output, session){
       geom_boxplot() +
       geom_point(alpha = 0.1, colour = "violet") +
       ggtitle("Fitted values against Site for Grain variety of cob")# +
-    
-    # geom_point(mean.values.site, mapping = aes(x = Site, y = fitted.lm, 
-    #                                            colour = "red")) +
-    # scale_colour_discrete(name = "Prediction", 
-    #                        breaks = c("red"), 
-    #                        labels = c("fitted value"))
+      
+      # geom_point(mean.values.site, mapping = aes(x = Site, y = fitted.lm, 
+      #                                            colour = "red")) +
+      # scale_colour_discrete(name = "Prediction", 
+      #                        breaks = c("red"), 
+      #                        labels = c("fitted value"))
     
     
     
@@ -1457,14 +1459,14 @@ server <- function(input, output, session){
       geom_boxplot() +
       geom_point(alpha = 0.1, colour = "violet") +
       ggtitle("Fitted values against Variety.fac in Lausanne")# +
-    
-    
-    # geom_point(mean.values.variety, mapping = aes(x = Variety.fac, 
-    #                                               y = fitted.lm, 
-    #                                               colour = "red")) +
-    # scale_colour_discrete(name = "Prediction", 
-    #                        breaks = c("red"), 
-    #                        labels = c("fitted value"))
+      
+      
+      # geom_point(mean.values.variety, mapping = aes(x = Variety.fac, 
+      #                                               y = fitted.lm, 
+      #                                               colour = "red")) +
+      # scale_colour_discrete(name = "Prediction", 
+      #                        breaks = c("red"), 
+      #                        labels = c("fitted value"))
     
     
     ## Add (or not) observed values
@@ -1497,7 +1499,7 @@ server <- function(input, output, session){
   
   output$plot.diagnostic.lm2 <- renderPlot({
     par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
-    )
+        )
     plot(InputModel.lm2(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
@@ -1519,7 +1521,7 @@ server <- function(input, output, session){
   
   output$plot.diagnostic.lm2_zoomed <- renderPlot({
     par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
-    )
+        )
     plot(InputModel.lm2(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
@@ -1741,7 +1743,7 @@ server <- function(input, output, session){
   ## Diagnostic plots
   output$plot.diagnostic.lm.inter <- renderPlot({
     par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
-    )
+        )
     plot(InputModel.lm.inter(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
@@ -1762,7 +1764,7 @@ server <- function(input, output, session){
   
   output$plot.diagnostic.lm3_zoomed <- renderPlot({
     par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
-    )
+        )
     plot(InputModel.lm.inter(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
@@ -1979,7 +1981,7 @@ server <- function(input, output, session){
   ## Diagnostic plots
   output$plot.diagnostic.lm.quad <- renderPlot({
     par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
-    )
+        )
     plot(InputModel.lm.quad(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
@@ -1999,7 +2001,7 @@ server <- function(input, output, session){
   
   output$plot.diagnostic.lm4_zoomed <- renderPlot({
     par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
-    )
+        )
     plot(InputModel.lm.quad(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
@@ -3076,21 +3078,21 @@ server <- function(input, output, session){
            no significant effect of medication on blood pressure for both age groups,
            whereas the effect is clearly present:
            positive for old people and negative for young people.</p>")
-      
+    
     } else if (c.type.error() == "Non-constant variance") {
-      
+        
       HTML("<p> The following situation represents some data fitted
       with a simple linear model when, in reality, the assumption of
       constant variance does not hold.</p>
            <p>Indeed, the variance increases with the increase of <em>Fertilizer</em>.</p>")
       
     } else if (c.type.error() == "Fit a model without quadratic effects when needed") {
-      
+        
       HTML("<p> The following situation represents some data fitted
       with a simple linear model without any quadratic effect when, in reality,
       a quadratic effect is needed.
            <p>Indeed, <em>Fertilizer</em> has a quadratic effect on the response variable.</p>")
-    }
+      }
     
   })
   
@@ -3328,7 +3330,7 @@ server <- function(input, output, session){
   ## plot the diagnostic plots
   output$plot.diagnostics.errors <- renderPlot({
     par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
-    )
+        )
     plot(InputModel.errors(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
@@ -3376,7 +3378,7 @@ server <- function(input, output, session){
   
   output$plot.diagnostic.lm11_zoomed <- renderPlot({
     par(mfrow = c(2, 2)#, mar = c(0.2, 1, 2, 1)
-    )
+        )
     plot(InputModel.errors(), which = c(1, 2, 3, 5))
     par(mfrow = c(1, 1))
   })
