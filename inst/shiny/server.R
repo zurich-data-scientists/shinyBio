@@ -2463,14 +2463,16 @@ server <- function(input, output, session){
       stat_function(fun = function(x){
         ilogit(coef.glm.bin.inter["(Intercept)"] + 
                  coef.glm.bin.inter["SiteLocarno"] + 
-                 coef.glm.bin.inter["Fertilizer"] * x)},
+                 coef.glm.bin.inter["Fertilizer"] * x +
+                 coef.glm.bin.inter["Fertilizer:SiteLocarno"] * x)},
         color = "green4") +
       
       ## Linear model with interactions for Zurich
       stat_function(fun = function(x){
         ilogit(coef.glm.bin.inter["(Intercept)"] +
                  coef.glm.bin.inter["SiteZurich"] + 
-                 coef.glm.bin.inter["Fertilizer"] * x)},
+                 coef.glm.bin.inter["Fertilizer"] * x +
+                 coef.glm.bin.inter["Fertilizer:SiteZurich"] * x)},
         color = "blue")
   })
   
