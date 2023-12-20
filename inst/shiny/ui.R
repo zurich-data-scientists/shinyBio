@@ -1104,7 +1104,7 @@ ui <- fluidPage(
                                              value = slope.x.sq.scenario1.glm.quad.eff["Locarno"],
                                              min = -0.1,
                                              max = 0,
-                                             step = 0.1,
+                                             step = 0.01,
                                              ticks = FALSE),
                                  br(),
                                  tags$h5(HTML("Choose the <em>Site</em> effect")),
