@@ -4,7 +4,7 @@
 
 This repository contains an R package designed for educational purposes.
 
-The included shiny app demonstrates the underlying principles of (generalized) linear models:
+The included dashboard application, written using the *shiny* package, demonstrates the underlying principles of (generalized) linear models:
 
 * It generates simulated data.
 * It displays marginal plots to visualize relationships between variables.
