@@ -33,8 +33,9 @@ server <- function(input, output, session){
       <p> After completing this study, a second one was conducted, 
          this time focusing on the observation of the number of corn cobs 
          rather than their weight. The study was again based on 306 corn plants.</p> <br><br><br><br> <p>
-         Nisia Trisconi and Matteo Tanadini collaborated to develop the concepts present in
-         this application, with Nisia handling the coding and implementation.</p> ")
+         Nisia Trisconi and Matteo Tanadini (from Zurich Data Scientists) collaborated to develop the concepts present in
+         this application, with Nisia handling the coding and implementation.</p> </p><br><br><br><br>
+         <p> This work is licensed under a CC-BY-SA 4.0 licence. More info are available at https://creativecommons.org/licenses/by-sa/4.0/deed.en</p>")
     
     
     
