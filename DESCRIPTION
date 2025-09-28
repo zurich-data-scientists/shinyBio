@@ -4,7 +4,7 @@ Version: 0.0.1
 Authors: ZDS
 Maintainer: Nisia Trisconi <nisia.trisconi@zurich-data-scientists.ch>
 Description: This R package contains a shiny app which gives a first idea of the regression world
-License: none
+License: CC-BY-SA 4.0 licence
 Encoding: UTF-8
 Depends: R(>= 4.0.0)
 Imports: shiny, ggplot2, dplyr, lmtest, sfsmisc, faraway, lme4, shinyBS, shinyjs, ggpubr, shinyWidgets, rintrojs
