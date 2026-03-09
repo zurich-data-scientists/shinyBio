@@ -118,75 +118,83 @@ ui <- fluidPage(
                         br(),
                         tags$h4("Model equation"),
                         introBox(
-                          introBox(
-                            introBox(
-                              introBox(
-                                introBox(
-                                  introBox(
-                                    introBox(
-                                      introBox(
-                                        introBox(
-                                          htmlOutput("model.equation.1"),
-                                          data.step = 1,
-                                          data.intro = paste0(HTML('&beta;<sub>0</sub>'), 
-                                                              " represents the intercept of 
+                          htmlOutput("model.equation.1"),
+                          data.step = 1,
+                          data.intro = paste0(HTML('&beta;<sub>0</sub>'), 
+                                              " represents the intercept of 
                                                             the linear regression. <br>
                                                             In particular, it represents 
                                                             the Cob Weight in the reference Site
                                                             (i.e. Lausanne) when no Fertilizer is used.") #,
-                                          #data.hint = "If desired, we can add like this",
-                                          #data.position = "bottom-left_aligned"
-                                        ),
-                                        data.step = 2,
-                                        data.intro = paste0(HTML('&beta;<sub>Fertilizer</sub>'),
-                                                            " is the coefficient that estimates
+                          #data.hint = "If desired, we can add like this",
+                          #data.position = "bottom-left_aligned"
+                        ),
+                        introBox(
+                          htmlOutput("model.equation.1"),
+                          data.step = 2,
+                          data.intro = paste0(HTML('&beta;<sub>Fertilizer</sub>'),
+                                              " is the coefficient that estimates
                                                   the quantity of change in Cob 
                                                             Weight per unit change in Fertilizer.") 
-                                      ),
-                                      data.step = 3,
-                                      data.intro = paste0(" x<sub>Fertilizer<sub>i</sub></sub> 
+                        ),
+                        introBox(
+                          htmlOutput("model.equation.1"),
+                          data.step = 3,
+                          data.intro = paste0(" x<sub>Fertilizer<sub>i</sub></sub> 
                                                 represents the quantity of Fertilizer 
                                                 for the observation <em>i</em>.") 
-                                    ),
-                                    data.step = 4,
-                                    data.intro = paste0(HTML('&beta;<sub>LOC</sub>'),
-                                                        " is the coefficient estimating the difference
+                        ),
+                        introBox(
+                          htmlOutput("model.equation.1"),
+                          data.step = 4,
+                          data.intro = paste0(HTML('&beta;<sub>LOC</sub>'),
+                                              " is the coefficient estimating the difference
                                                             between the reference Site and Locarno. <br>", 
-                                                        HTML('&beta;<sub>0</sub>'), " + ", HTML('&beta;<sub>LOC</sub>'), 
-                                                        " indicates the Cob Weight in Locarno when no Fertilizer is used.") 
-                                  ),
-                                  data.step = 5,
-                                  data.intro = paste0("I<sub>LOC</sub> indicates whether or not
+                                              HTML('&beta;<sub>0</sub>'), " + ", HTML('&beta;<sub>LOC</sub>'), 
+                                              " indicates the Cob Weight in Locarno when no Fertilizer is used.") 
+                        ),
+                        introBox(
+                          htmlOutput("model.equation.1"),
+                          data.step = 5,
+                          data.intro = paste0("I<sub>LOC</sub> indicates whether or not
                                     the site of observation <em>i</em> corresponds to Locarno. <br>
                                                                 I<sub>LOC<sub>i</sub></sub> = 1 
                                                         if the Site of observation <em>i</em> is Locarno, 
                                                         I<sub>LOC</sub> = 0 otherwise.") 
-                                ),
-                                data.step = 6,
-                                data.intro = paste0(HTML('&beta;<sub>ZH</sub>'),
-                                                    " is the coefficient estimating the difference
+                        ),
+                        introBox(
+                          htmlOutput("model.equation.1"),
+                          data.step = 6,
+                          data.intro = paste0(HTML('&beta;<sub>ZH</sub>'),
+                                              " is the coefficient estimating the difference
                                                             between the reference Site and Zurich. <br>", 
-                                                    HTML('&beta;<sub>0</sub>'), 
-                                                    " + ",
-                                                    HTML('&beta;<sub>ZH</sub>'), 
-                                                    " indicates the Cob Weight in 
+                                              HTML('&beta;<sub>0</sub>'), 
+                                              " + ",
+                                              HTML('&beta;<sub>ZH</sub>'), 
+                                              " indicates the Cob Weight in 
                                                       Zurich when no Fertilizer is used.") 
-                              ),
-                              data.step = 7,
-                              data.intro = paste0("I<sub>ZH<sub>i</sub></sub> 
+                        ),
+                        introBox(
+                          htmlOutput("model.equation.1"),
+                          data.step = 7,
+                          data.intro = paste0("I<sub>ZH<sub>i</sub></sub> 
                                 indicates whether or not the site of observation 
                                 <em>i</em> corresponds to Zurich. <br> I<sub>ZH<sub>i</sub></sub> = 1
                                                     if the Site of observation <em>i</em> is Zurich, 
                                                     I<sub>ZH<sub>i</sub></sub> = 0 otherwise.") 
-                            ),
-                            data.step = 8,
-                            data.intro = paste0("<em>&epsilon;<sub>i</sub></em> is the residual term. <br>
+                        ),
+                        introBox(
+                          htmlOutput("model.equation.1"),
+                          data.step = 8,
+                          data.intro = paste0("<em>&epsilon;<sub>i</sub></em> is the residual term. <br>
                                             It represents the difference between the observed and 
                                                 the estimated value for the response variable. <br>
                                                 This quantity correspond to the vertical distance 
                                                 between the observed value (i.e. the actual observation) 
                                                 and the regression line.") 
-                          ),
+                        ),
+                        introBox(
+                          htmlOutput("model.equation.1"),
                           data.step = 9,
                           data.intro = paste0("<em>e</em> is the error term. <br>
                                             It captures the variability in the response variable 
