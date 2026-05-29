@@ -117,88 +117,54 @@ ui <- fluidPage(
                         verbatimTextOutput("model.lm1"),
                         br(),
                         tags$h4("Model equation"),
-                        introBox(
-                          htmlOutput("model.equation.1"),
-                          data.step = 1,
-                          data.intro = paste0(HTML('&beta;<sub>0</sub>'), 
-                                              " represents the intercept of 
-                                                            the linear regression. <br>
-                                                            In particular, it represents 
-                                                            the Cob Weight in the reference Site
-                                                            (i.e. Lausanne) when no Fertilizer is used.") #,
-                          #data.hint = "If desired, we can add like this",
-                          #data.position = "bottom-left_aligned"
-                        ),
-                        introBox(
-                          htmlOutput("model.equation.1"),
-                          data.step = 2,
-                          data.intro = paste0(HTML('&beta;<sub>Fertilizer</sub>'),
-                                              " is the coefficient that estimates
-                                                  the quantity of change in Cob 
-                                                            Weight per unit change in Fertilizer.") 
-                        ),
-                        introBox(
-                          htmlOutput("model.equation.1"),
-                          data.step = 3,
-                          data.intro = paste0(" x<sub>Fertilizer<sub>i</sub></sub> 
-                                                represents the quantity of Fertilizer 
-                                                for the observation <em>i</em>.") 
-                        ),
-                        introBox(
-                          htmlOutput("model.equation.1"),
-                          data.step = 4,
-                          data.intro = paste0(HTML('&beta;<sub>LOC</sub>'),
-                                              " is the coefficient estimating the difference
-                                                            between the reference Site and Locarno. <br>", 
-                                              HTML('&beta;<sub>0</sub>'), " + ", HTML('&beta;<sub>LOC</sub>'), 
-                                              " indicates the Cob Weight in Locarno when no Fertilizer is used.") 
-                        ),
-                        introBox(
-                          htmlOutput("model.equation.1"),
-                          data.step = 5,
-                          data.intro = paste0("I<sub>LOC</sub> indicates whether or not
-                                    the site of observation <em>i</em> corresponds to Locarno. <br>
-                                                                I<sub>LOC<sub>i</sub></sub> = 1 
-                                                        if the Site of observation <em>i</em> is Locarno, 
-                                                        I<sub>LOC</sub> = 0 otherwise.") 
-                        ),
-                        introBox(
-                          htmlOutput("model.equation.1"),
-                          data.step = 6,
-                          data.intro = paste0(HTML('&beta;<sub>ZH</sub>'),
-                                              " is the coefficient estimating the difference
-                                                            between the reference Site and Zurich. <br>", 
-                                              HTML('&beta;<sub>0</sub>'), 
-                                              " + ",
-                                              HTML('&beta;<sub>ZH</sub>'), 
-                                              " indicates the Cob Weight in 
-                                                      Zurich when no Fertilizer is used.") 
-                        ),
-                        introBox(
-                          htmlOutput("model.equation.1"),
-                          data.step = 7,
-                          data.intro = paste0("I<sub>ZH<sub>i</sub></sub> 
-                                indicates whether or not the site of observation 
-                                <em>i</em> corresponds to Zurich. <br> I<sub>ZH<sub>i</sub></sub> = 1
-                                                    if the Site of observation <em>i</em> is Zurich, 
-                                                    I<sub>ZH<sub>i</sub></sub> = 0 otherwise.") 
-                        ),
-                        introBox(
-                          htmlOutput("model.equation.1"),
-                          data.step = 8,
-                          data.intro = paste0("<em>&epsilon;<sub>i</sub></em> is the residual term. <br>
-                                            It represents the difference between the observed and 
-                                                the estimated value for the response variable. <br>
-                                                This quantity correspond to the vertical distance 
-                                                between the observed value (i.e. the actual observation) 
-                                                and the regression line.") 
-                        ),
-                        introBox(
-                          htmlOutput("model.equation.1"),
-                          data.step = 9,
-                          data.intro = paste0("<em>e</em> is the error term. <br>
-                                            It captures the variability in the response variable 
-                                            that is not explained by the regression equation.") 
+                        tags$p(
+                          style = "white-space: nowrap;",
+                          HTML("y<sub>i</sub> = "),
+                          tags$span(
+                            HTML("&beta;<sub>0</sub>"),
+                            id = "model-eq-beta0"
+                          ),
+                          HTML(" + "),
+                          tags$span(
+                            HTML("&beta;<sub>Fertilizer</sub>"),
+                            id = "model-eq-beta-fertilizer"
+                          ),
+                          HTML(" * "),
+                          tags$span(
+                            HTML("x<sub>Fertilizer,i</sub>"),
+                            id = "model-eq-x-fertilizer"
+                          ),
+                          HTML(" + "),
+                          tags$span(
+                            HTML("&beta;<sub>LOC</sub>"),
+                            id = "model-eq-beta-loc"
+                          ),
+                          HTML(" * "),
+                          tags$span(
+                            HTML("I<sub>LOC,i</sub>"),
+                            id = "model-eq-i-loc"
+                          ),
+                          HTML(" + "),
+                          tags$span(
+                            HTML("&beta;<sub>ZH</sub>"),
+                            id = "model-eq-beta-zh"
+                          ),
+                          HTML(" * "),
+                          tags$span(
+                            HTML("I<sub>ZH,i</sub>"),
+                            id = "model-eq-i-zh"
+                          ),
+                          HTML(" + "),
+                          tags$span(
+                            HTML("&epsilon;<sub>i</sub>"),
+                            id = "model-eq-epsilon"
+                          ),
+                          HTML(paste0(", &ensp; i = 1,..., ", dim.dataset, ",&ensp; ")),
+                          tags$span(
+                            HTML("<em>e</em>"),
+                            id = "model-eq-error"
+                          ),
+                          HTML(" ~ N(&mu; , &sigma;<sub>&epsilon;</sub><sup>2</sup>)")
                         ),
                         br(),
                         actionButton("help", label = "Explanation"),

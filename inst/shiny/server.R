@@ -259,7 +259,80 @@ server <- function(input, output, session){
   observeEvent(input$help,
                introjs(session, options = list("nextLabel"="Next",
                                                "prevLabel"="Prev",
-                                               "close"),
+                                               steps = list(
+                                                 list(
+                                                   element = "#model-eq-beta0",
+                                                   intro = paste0(HTML('&beta;<sub>0</sub>'),
+                                                                  " represents the intercept of 
+                                                            the linear regression. <br>
+                                                            In particular, it represents 
+                                                            the Cob Weight in the reference Site
+                                                            (i.e. Lausanne) when no Fertilizer is used.")
+                                                 ),
+                                                 list(
+                                                   element = "#model-eq-beta-fertilizer",
+                                                   intro = paste0(HTML('&beta;<sub>Fertilizer</sub>'),
+                                                                  " is the coefficient that estimates
+                                                  the quantity of change in Cob 
+                                                            Weight per unit change in Fertilizer.")
+                                                 ),
+                                                 list(
+                                                   element = "#model-eq-x-fertilizer",
+                                                   intro = paste0(" x<sub>Fertilizer<sub>i</sub></sub> 
+                                                represents the quantity of Fertilizer 
+                                                for the observation <em>i</em>.")
+                                                 ),
+                                                 list(
+                                                   element = "#model-eq-beta-loc",
+                                                   intro = paste0(HTML('&beta;<sub>LOC</sub>'),
+                                                                  " is the coefficient estimating the difference
+                                                            between the reference Site and Locarno. <br>", 
+                                                                  HTML('&beta;<sub>0</sub>'), " + ", HTML('&beta;<sub>LOC</sub>'), 
+                                                                  " indicates the Cob Weight in Locarno when no Fertilizer is used.")
+                                                 ),
+                                                 list(
+                                                   element = "#model-eq-i-loc",
+                                                   intro = paste0("I<sub>LOC</sub> indicates whether or not
+                                    the site of observation <em>i</em> corresponds to Locarno. <br>
+                                                                I<sub>LOC<sub>i</sub></sub> = 1 
+                                                        if the Site of observation <em>i</em> is Locarno, 
+                                                        I<sub>LOC</sub> = 0 otherwise.")
+                                                 ),
+                                                 list(
+                                                   element = "#model-eq-beta-zh",
+                                                   intro = paste0(HTML('&beta;<sub>ZH</sub>'),
+                                                                  " is the coefficient estimating the difference
+                                                            between the reference Site and Zurich. <br>", 
+                                                                  HTML('&beta;<sub>0</sub>'), 
+                                                                  " + ",
+                                                                  HTML('&beta;<sub>ZH</sub>'), 
+                                                                  " indicates the Cob Weight in 
+                                                      Zurich when no Fertilizer is used.")
+                                                 ),
+                                                 list(
+                                                   element = "#model-eq-i-zh",
+                                                   intro = paste0("I<sub>ZH<sub>i</sub></sub> 
+                                indicates whether or not the site of observation 
+                                <em>i</em> corresponds to Zurich. <br> I<sub>ZH<sub>i</sub></sub> = 1
+                                                    if the Site of observation <em>i</em> is Zurich, 
+                                                    I<sub>ZH<sub>i</sub></sub> = 0 otherwise.")
+                                                 ),
+                                                 list(
+                                                   element = "#model-eq-epsilon",
+                                                   intro = paste0("<em>&epsilon;<sub>i</sub></em> is the residual term. <br>
+                                            It represents the difference between the observed and 
+                                                the estimated value for the response variable. <br>
+                                                This quantity correspond to the vertical distance 
+                                                between the observed value (i.e. the actual observation) 
+                                                and the regression line.")
+                                                 ),
+                                                 list(
+                                                   element = "#model-eq-error",
+                                                   intro = paste0("<em>e</em> is the error term. <br>
+                                            It captures the variability in the response variable 
+                                            that is not explained by the regression equation.")
+                                                 )
+                                               )),
                        # events = list("oncomplete"=I('alert("Glad that is over")')) 
                ))
   
@@ -3894,4 +3967,3 @@ server <- function(input, output, session){
   })
   
 } ## End server
-

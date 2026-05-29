@@ -2,25 +2,12 @@
 #'
 #' Run this function to start the shiny app in the browser.
 #'
-#' @export
+#' @param ... Arguments passed to [shiny::runApp()], such as `port`, `host`,
+#'   and `launch.browser`.
 #'
-#' @import shiny
-#' @import ggplot2
-#' @import dplyr
-#' @import lmtest
-#' @import sfsmisc
-#' @import faraway
-#' @import lme4
-#' @import shinyBS
-#' @import shinyjs
-#' @import ggpubr
-#' @import shinyWidgets 
-#' @import rintrojs
-#' @importFrom magrittr %>%
+#' @export
 
-
-
-run_app <- function() {
+run_app <- function(...) {
   shiny::runApp(appDir = system.file("shiny", package = "shinyBio"),
-                launch.browser = TRUE)
+                ...)
 }

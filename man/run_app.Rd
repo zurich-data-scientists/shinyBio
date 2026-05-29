@@ -4,7 +4,11 @@
 \alias{run_app}
 \title{Shiny App Bio stats}
 \usage{
-run_app()
+run_app(...)
+}
+\arguments{
+\item{...}{Arguments passed to [shiny::runApp()], such as `port`, `host`,
+and `launch.browser`.}
 }
 \description{
 Run this function to start the shiny app in the browser.
